@@ -1,0 +1,59 @@
+.add-streamer {
+  padding: 20px;
+  border-bottom: 2px solid #eee;
+  background: #fafafa;
+}
+
+.add-streamer h2 {
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.add-streamer form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.add-streamer input {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.add-streamer input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.add-streamer button {
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.add-streamer button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.add-streamer button:active {
+  transform: translateY(0);
+}
+
+.error {
+  color: #e53e3e;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
