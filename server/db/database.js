@@ -7,6 +7,18 @@ const db = new Database(dbPath);
 function initializeDatabase() {
   // Enable foreign keys
   db.pragma('foreign_keys = ON');
+  
+// Create Events table for the Calendar
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS events (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      description TEXT,
+      event_date DATE NOT NULL,
+      type TEXT DEFAULT 'event',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 
   // Create streamers table
   db.exec(`
@@ -21,7 +33,20 @@ function initializeDatabase() {
     )
   `);
 
-  // Add missing columns if they don't exist (for existing databases)
+  // Create users table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT NOT NULL UNIQUE,
+      password TEXT NOT NULL,
+      role TEXT DEFAULT 'streamer',
+      streamer_id INTEGER,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (streamer_id) REFERENCES streamers(id) ON DELETE SET NULL
+    )
+  `);
+
+
   const addColumnSafely = (table, column, definition) => {
     try {
       db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
@@ -35,6 +60,12 @@ function initializeDatabase() {
   addColumnSafely('streamers', 'page_link', 'TEXT');
   addColumnSafely('streamers', 'platform', 'TEXT');
   addColumnSafely('streamers', 'status', 'TEXT DEFAULT "offline"');
+  addColumnSafely('users', 'role', "TEXT DEFAULT 'streamer'");
+  addColumnSafely('users', 'streamer_id', "INTEGER");
+  addColumnSafely('streamers', 'current_title', 'TEXT');
+  addColumnSafely('streamers', 'current_category', 'TEXT');
+  addColumnSafely('streamers', 'current_link', 'TEXT');
+  addColumnSafely('streamers', 'last_online_at', 'DATETIME');
 
   // Create attendance records table
   db.exec(`

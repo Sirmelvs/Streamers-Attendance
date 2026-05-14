@@ -42,30 +42,35 @@ router.get('/stats/:streamerId', (req, res) => {
 });
 
 // Record attendance
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   try {
-    const { streamer_id, status } = req.body;
+    // We are now accepting the extra stream info!
+    const { streamer_id, status, title, category, link } = req.body;
+
     if (!streamer_id || !status) {
-      return res.status(400).json({ error: 'streamer_id and status are required' });
-    }
-    
-    // Validate status
-    if (!['online', 'offline'].includes(status)) {
-      return res.status(400).json({ error: 'status must be "online" or "offline"' });
+      return res.status(400).json({ error: 'Streamer ID and status are required' });
     }
 
-    const stmt = db.prepare(`
-      INSERT INTO attendance (streamer_id, status)
-      VALUES (?, ?)
-    `);
-    const result = stmt.run(streamer_id, status);
+    // 1. Insert the attendance log history
+    const insertStmt = db.prepare('INSERT INTO attendance (streamer_id, status) VALUES (?, ?)');
+    insertStmt.run(streamer_id, status);
 
-    // Update streamer status
-    const updateStmt = db.prepare('UPDATE streamers SET status = ? WHERE id = ?');
-    updateStmt.run(status, streamer_id);
-    
-    const record = db.prepare('SELECT * FROM attendance WHERE id = ?').get(result.lastInsertRowid);
-    res.status(201).json(record);
+    // 2. Update the main streamer profile
+    if (status === 'online') {
+      // If they go online, save their stream info and the EXACT time they started
+      const updateStmt = db.prepare(`
+        UPDATE streamers 
+        SET status = ?, current_title = ?, current_category = ?, current_link = ?, last_online_at = CURRENT_TIMESTAMP 
+        WHERE id = ?
+      `);
+      updateStmt.run(status, title || null, category || null, link || null, streamer_id);
+    } else {
+      // If they go offline, just update the status (we can leave the old title there for the records)
+      const updateStmt = db.prepare('UPDATE streamers SET status = ? WHERE id = ?');
+      updateStmt.run(status, streamer_id);
+    }
+
+    res.status(201).json({ message: 'Status updated successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -93,7 +98,7 @@ router.get('/', (req, res) => {
     }
 
     query += ' ORDER BY a.timestamp DESC LIMIT 500';
-    
+
     const stmt = db.prepare(query);
     const records = stmt.all(...params);
     res.json(records);
