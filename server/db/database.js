@@ -7,6 +7,15 @@ const db = new Database(dbPath);
 function initializeDatabase() {
   // Enable foreign keys
   db.pragma('foreign_keys = ON');
+
+// Safely add the schedule column to ANY table that might hold streamers
+  try {
+    db.exec(`ALTER TABLE users ADD COLUMN weekly_schedule TEXT DEFAULT 'No schedule set by Admin yet.'`);
+  } catch (error) {}
+  
+  try {
+    db.exec(`ALTER TABLE streamers ADD COLUMN weekly_schedule TEXT DEFAULT 'No schedule set by Admin yet.'`);
+  } catch (error) {}
   
 // Create Events table for the Calendar
   db.exec(`

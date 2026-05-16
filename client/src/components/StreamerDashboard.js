@@ -4,14 +4,16 @@ import CalendarView from './CalendarView';
 function StreamerDashboard({ user, token }) {
     const [status, setStatus] = useState('offline');
     const [loading, setLoading] = useState(false);
-
     const [streamTitle, setStreamTitle] = useState('');
     const [streamInfo, setStreamInfo] = useState('');
     const [streamLink, setStreamLink] = useState('');
     const [streamerName, setStreamerName] = useState('');
     const [sessionSeconds, setSessionSeconds] = useState(0);
+    
+    // --- NEW: STATE FOR ASSIGNED SCHEDULE ---
+    const [mySchedule, setMySchedule] = useState('');
 
-    // 1. Fetch current status AND saved text/time on load
+    // 1. Fetch current status AND saved schedule on load
     useEffect(() => {
         const fetchCurrentStatus = async () => {
             if (!user.streamer_id) return;
@@ -30,7 +32,9 @@ function StreamerDashboard({ user, token }) {
                         setStreamInfo(myProfile.current_category || '');
                         setStreamLink(myProfile.current_link || '');
                         setStreamerName(myProfile.name || ''); 
-
+                        
+                        // Grab their assigned schedule!
+                        setMySchedule(myProfile.weekly_schedule || 'No schedule set yet.');
 
                         if (myProfile.status === 'online' && myProfile.last_online_at) {
                             const startTime = new Date(myProfile.last_online_at + 'Z').getTime();
@@ -50,7 +54,7 @@ function StreamerDashboard({ user, token }) {
         fetchCurrentStatus();
     }, [user.streamer_id, token]);
 
-
+    // Timer Logic
     useEffect(() => {
         let interval = null;
         if (status === 'online') {
@@ -113,7 +117,13 @@ function StreamerDashboard({ user, token }) {
     return (
         <div style={{ padding: '40px', maxWidth: '800px', margin: '0 auto', fontFamily: 'sans-serif' }}>
             <h2 style={{ color: '#1e293b' }}>Welcome back, {streamerName ? streamerName : user.username}!</h2>
-            <p style={{ color: '#64748b', marginBottom: '30px' }}>This is your private streamer control center.</p>
+            <p style={{ color: '#64748b', marginBottom: '20px' }}>This is your private streamer control center.</p>
+
+            {/* --- NEW: DISPLAY ASSIGNED SCHEDULE --- */}
+            <div style={{ background: '#eff6ff', borderLeft: '4px solid #3b82f6', padding: '15px', borderRadius: '4px', marginBottom: '30px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                <strong style={{ color: '#1e3a8a', display: 'block', marginBottom: '5px' }}>🗓️ Your Assigned Schedule:</strong>
+                <span style={{ color: '#1e40af', whiteSpace: 'pre-wrap' }}>{mySchedule}</span>
+            </div>
 
             {/* THE LIVE TIMER DISPLAY */}
             <div style={{ textAlign: 'center', marginBottom: '30px', padding: '30px', background: status === 'online' ? '#ecfdf5' : '#f8fafc', border: `2px solid ${status === 'online' ? '#10b981' : '#cbd5e1'}`, borderRadius: '12px', transition: 'all 0.3s ease' }}>
@@ -139,7 +149,7 @@ function StreamerDashboard({ user, token }) {
                                 placeholder="e.g., Playing Ranked Valorant!"
                                 value={streamTitle}
                                 onChange={(e) => setStreamTitle(e.target.value)}
-                                disabled={status === 'online'} // Lock input while live
+                                disabled={status === 'online'} 
                                 style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
                             />
                         </div>
@@ -198,7 +208,6 @@ function StreamerDashboard({ user, token }) {
                 <h3 style={{ color: '#334155', marginBottom: '15px' }}>📅 Upcoming Events</h3>
                 <CalendarView token={token} />
             </div>
-
 
         </div>
     );
