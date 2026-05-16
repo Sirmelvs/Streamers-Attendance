@@ -7,11 +7,9 @@ function AttendanceRecords({ streamer, token }) {
   const [loading, setLoading] = useState(false);
   const [liveUptime, setLiveUptime] = useState(0);
 
-  // --- NEW: SCHEDULE STATE ---
   const [scheduleInput, setScheduleInput] = useState('');
   const [isEditingSchedule, setIsEditingSchedule] = useState(false);
 
-  // 1. Fetching Records and Stats
   useEffect(() => {
     const fetchRecords = async () => {
       setLoading(true);
@@ -47,7 +45,6 @@ function AttendanceRecords({ streamer, token }) {
     }
   }, [streamer, token]);
 
-  // 2. Load Schedule when you click a streamer
   useEffect(() => {
     if (streamer) {
       setScheduleInput(streamer.weekly_schedule || '');
@@ -55,7 +52,6 @@ function AttendanceRecords({ streamer, token }) {
     }
   }, [streamer]);
 
-  // 3. Save Schedule Logic
   const handleSaveSchedule = async () => {
     try {
       await fetch(`/api/streamers/${streamer.id}/schedule`, {
@@ -68,14 +64,13 @@ function AttendanceRecords({ streamer, token }) {
       });
       alert('Schedule saved successfully!');
       setIsEditingSchedule(false);
-      streamer.weekly_schedule = scheduleInput; // Update locally so it doesn't vanish
+      streamer.weekly_schedule = scheduleInput; 
     } catch (error) {
       console.error('Failed to save schedule');
       alert('Failed to save schedule');
     }
   };
 
-  // 4. Admin Live Timer Logic
   useEffect(() => {
     let interval = null;
     if (streamer.status === 'online' && streamer.last_online_at) {
@@ -138,7 +133,7 @@ function AttendanceRecords({ streamer, token }) {
         </button>
       </div>
 
-      {/* --- ALWAYS VISIBLE: ADMIN SCHEDULE MANAGER --- */}
+      {/* ADMIN SCHEDULE MANAGER */}
       <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
           <h3 style={{ margin: 0, fontSize: '16px', color: '#334155' }}>🗓️ Assigned Schedule</h3>
@@ -163,7 +158,7 @@ function AttendanceRecords({ streamer, token }) {
         )}
       </div>
 
-      {/* --- CONDITIONAL: LIVE NOW BANNER --- */}
+      {/* LIVE NOW BANNER */}
       {streamer.status === 'online' && (
         <div style={{ background: '#ecfdf5', border: '2px solid #10b981', borderRadius: '8px', padding: '20px', marginBottom: '20px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #a7f3d0', paddingBottom: '10px', marginBottom: '15px' }}>
@@ -178,7 +173,10 @@ function AttendanceRecords({ streamer, token }) {
           
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', fontSize: '15px', color: '#334155' }}>
             <div><strong style={{ color: '#0f172a' }}>📝 Stream Title:</strong> {streamer.current_title || <em>None provided</em>}</div>
-            <div><strong style={{ color: '#0f172a' }}>🎮 Category/Game:</strong> {streamer.current_category || <em>None provided</em>}</div>
+            
+            {/* --- UPDATED TO "DESCRIPTION" HERE --- */}
+            <div><strong style={{ color: '#0f172a' }}>📄 Description:</strong> {streamer.current_category || <em>None provided</em>}</div>
+            
             <div style={{ gridColumn: 'span 2' }}>
               <strong style={{ color: '#0f172a' }}>🔗 Broadcast Link:</strong>{' '}
               {streamer.current_link ? (
@@ -193,7 +191,7 @@ function AttendanceRecords({ streamer, token }) {
         </div>
       )}
 
-      {/* --- STATS & TABLE --- */}
+      {/* STATS & TABLE */}
       {stats && (
         <div className="stats">
           <div className="stat-item">
