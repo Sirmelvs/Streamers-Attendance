@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import loginBg from '../assets/login-bg.jpg'; // Importing your epic character art!
 
 function Auth({ onLogin }) {
   const [isLogin, setIsLogin] = useState(true);
@@ -40,44 +41,129 @@ function Auth({ onLogin }) {
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '100px auto', padding: '20px', background: 'white', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
-      <h2 style={{ textAlign: 'center', marginBottom: '20px', color: '#333' }}>
-        {isLogin ? 'Welcome Back' : 'Create an Account'}
-      </h2>
+    // OUTER FULL-SCREEN WRAPPER
+    <div style={{ 
+        backgroundImage: `url(${loginBg})`, 
+        backgroundSize: 'cover', 
+        backgroundPosition: 'center', 
+        minHeight: '100vh', 
+        width: '100vw',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '20px',
+        boxSizing: 'border-box'
+    }}>
       
-      {error && <p style={{ color: '#e53e3e', textAlign: 'center', fontSize: '14px' }}>{error}</p>}
-      
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-          style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ddd' }}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ddd' }}
-        />
-        <button type="submit" style={{ padding: '10px', background: '#667eea', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-          {isLogin ? 'Sign In' : 'Sign Up'}
-        </button>
-      </form>
+      {/* THE GLASSMORPHISM LOGIN CARD */}
+      <div style={{ 
+          width: '100%',
+          maxWidth: '400px', 
+          padding: '40px', 
+          background: 'rgba(15, 23, 42, 0.85)', /* Dark frosted glass */
+          backdropFilter: 'blur(12px)', 
+          WebkitBackdropFilter: 'blur(12px)',
+          border: '1px solid rgba(255, 255, 255, 0.1)', /* Subtle glow edge */
+          borderRadius: '12px', 
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)', /* Deep shadow */
+          color: 'white' /* Makes all text white */
+      }}>
+        
+        <h2 style={{ textAlign: 'center', marginBottom: '30px', color: '#f8fafc', letterSpacing: '1px' }}>
+          {isLogin ? 'WELCOME BACK' : 'CREATE ACCOUNT'}
+        </h2>
+        
+        {error && <p style={{ color: '#fca5a5', background: 'rgba(239, 68, 68, 0.2)', padding: '10px', borderRadius: '6px', textAlign: 'center', fontSize: '14px', border: '1px solid rgba(239, 68, 68, 0.5)' }}>{error}</p>}
+        
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#94a3b8', marginBottom: '8px', textTransform: 'uppercase' }}>Username</label>
+            <input
+              type="text"
+              placeholder="Enter your username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              style={{ 
+                  width: '100%', 
+                  padding: '12px', 
+                  borderRadius: '6px', 
+                  border: '1px solid rgba(255, 255, 255, 0.2)', 
+                  background: 'rgba(0, 0, 0, 0.4)', /* Dark input background */
+                  color: 'white', 
+                  boxSizing: 'border-box',
+                  outline: 'none',
+                  fontSize: '15px'
+              }}
+            />
+          </div>
 
-      <p style={{ textAlign: 'center', marginTop: '15px', fontSize: '14px' }}>
-        {isLogin ? "Don't have an account? " : "Already have an account? "}
-        <button 
-          onClick={() => setIsLogin(!isLogin)} 
-          style={{ background: 'none', border: 'none', color: '#667eea', cursor: 'pointer', textDecoration: 'underline' }}
-        >
-          {isLogin ? 'Sign Up' : 'Log In'}
-        </button>
-      </p>
+          <div>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#94a3b8', marginBottom: '8px', textTransform: 'uppercase' }}>Password</label>
+            <input
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              style={{ 
+                  width: '100%', 
+                  padding: '12px', 
+                  borderRadius: '6px', 
+                  border: '1px solid rgba(255, 255, 255, 0.2)', 
+                  background: 'rgba(0, 0, 0, 0.4)', 
+                  color: 'white', 
+                  boxSizing: 'border-box',
+                  outline: 'none',
+                  fontSize: '15px'
+              }}
+            />
+          </div>
+
+          <button 
+            type="submit" 
+            style={{ 
+                padding: '14px', 
+                background: 'rgba(239, 68, 68, 0.9)', /* Deep Gaming Red */
+                color: 'white', 
+                border: '1px solid #ef4444', 
+                borderRadius: '6px', 
+                cursor: 'pointer', 
+                fontWeight: 'bold',
+                fontSize: '16px',
+                letterSpacing: '1px',
+                marginTop: '10px',
+                textTransform: 'uppercase',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 4px 6px -1px rgba(239, 68, 68, 0.4)'
+            }}
+            onMouseOver={(e) => e.target.style.background = 'rgba(220, 38, 38, 1)'}
+            onMouseOut={(e) => e.target.style.background = 'rgba(239, 68, 68, 0.9)'}
+          >
+            {isLogin ? 'Sign In' : 'Join the Fight'}
+          </button>
+        </form>
+
+        <p style={{ textAlign: 'center', marginTop: '25px', fontSize: '14px', color: '#94a3b8' }}>
+          {isLogin ? "Don't have an account? " : "Already have an account? "}
+          <button 
+            onClick={() => setIsLogin(!isLogin)} 
+            style={{ 
+                background: 'none', 
+                border: 'none', 
+                color: '#ef4444', 
+                cursor: 'pointer', 
+                fontWeight: 'bold',
+                textDecoration: 'none',
+                padding: 0
+            }}
+            onMouseOver={(e) => e.target.style.textDecoration = 'underline'}
+            onMouseOut={(e) => e.target.style.textDecoration = 'none'}
+          >
+            {isLogin ? 'Sign Up' : 'Log In'}
+          </button>
+        </p>
+      </div>
     </div>
   );
 }

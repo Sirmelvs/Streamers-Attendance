@@ -31,7 +31,7 @@ function App() {
       fetchStreamers();
       fetchMonitorSettings();
     }
-  }, [token]); // This tells React to re-run the fetch when your token changes (like when you log in)
+  }, [token]);
 
   const handleLogin = (newToken, userData) => {
     setToken(newToken);
@@ -206,23 +206,54 @@ function App() {
     );
   }
 
-  // 2. If logged in as a STREAMER, show the Streamer UI
+  // 2. If logged in as a STREAMER, show the SLEEK Streamer UI
   if (user.role === 'streamer') {
     return (
-      <div className="App">
-        <header className="App-header">
-          <div className="header-content">
-            <h1>Streamer Portal</h1>
-            <div className="monitor-actions">
-              <button className="monitor-btn" onClick={handleLogout} style={{ backgroundColor: '#e53e3e' }}>
-                Logout
-              </button>
-            </div>
+      <div className="App" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        
+        {/* --- NEW GLASSMORPHISM HEADER --- */}
+        <header style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            padding: '15px 40px', 
+            background: 'rgba(15, 23, 42, 0.75)', /* Dark, semi-transparent slate */
+            backdropFilter: 'blur(10px)', /* Creates the frosted glass blur effect */
+            WebkitBackdropFilter: 'blur(10px)', /* For Safari support */
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)', /* Subtle glowing edge */
+            color: 'white',
+            position: 'sticky', 
+            top: 0, 
+            zIndex: 100 
+        }}>
+          <h1 style={{ margin: 0, fontSize: '24px', letterSpacing: '1px' }}>Streamer Portal</h1>
+          
+          <div className="monitor-actions">
+            <button 
+              onClick={handleLogout} 
+              style={{ 
+                  padding: '8px 20px', 
+                  background: 'rgba(239, 68, 68, 0.2)', /* Translucent red */
+                  color: '#fca5a5', /* Light red text */
+                  border: '1px solid rgba(239, 68, 68, 0.5)', /* Red border */
+                  borderRadius: '6px', 
+                  fontWeight: 'bold', 
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+              }}
+              onMouseOver={(e) => e.target.style.background = 'rgba(239, 68, 68, 0.4)'}
+              onMouseOut={(e) => e.target.style.background = 'rgba(239, 68, 68, 0.2)'}
+            >
+              Logout
+            </button>
           </div>
         </header>
-        <main style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
+
+        {/* --- MAIN CONTENT (Removed the solid gray background!) --- */}
+        <main style={{ flex: 1, padding: 0, margin: 0, display: 'flex', flexDirection: 'column' }}>
           <StreamerDashboard user={user} token={token} />
         </main>
+        
       </div>
     );
   }

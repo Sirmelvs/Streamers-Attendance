@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import CalendarView from './CalendarView';
+import dashboardBg from '../assets/dashboard-bg.jpg';
 
 function StreamerDashboard({ user, token }) {
     const [status, setStatus] = useState('offline');
@@ -106,91 +107,78 @@ function StreamerDashboard({ user, token }) {
     };
 
     return (
-        <div style={{ padding: '40px', maxWidth: '800px', margin: '0 auto', fontFamily: 'sans-serif' }}>
-            <h2 style={{ color: '#1e293b' }}>Welcome back, {streamerName ? streamerName : user.username}!</h2>
-            <p style={{ color: '#64748b', marginBottom: '20px' }}>This is your private streamer control center.</p>
+        <div style={{ 
+            backgroundImage: `url(${dashboardBg})`, 
+            backgroundSize: 'cover', 
+            backgroundPosition: 'center', 
+            backgroundAttachment: 'fixed',
+            minHeight: '100vh', 
+            width: '100vw',
+            paddingTop: '40px',
+            paddingBottom: '40px',
+            boxSizing: 'border-box'
+        }}>
+            
+            <div style={{ 
+                padding: '40px', 
+                maxWidth: '800px', 
+                margin: '0 auto', 
+                fontFamily: 'sans-serif', 
+                backgroundColor: 'rgba(255, 255, 255, 0.85)', 
+                borderRadius: '12px', 
+                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)' 
+            }}>
+                
+                <h2 style={{ color: '#1e293b' }}>Welcome back, {streamerName ? streamerName : user.username}!</h2>
+                <p style={{ color: '#64748b', marginBottom: '20px' }}>This is your private streamer control center.</p>
 
-            <div style={{ background: '#eff6ff', borderLeft: '4px solid #3b82f6', padding: '15px', borderRadius: '4px', marginBottom: '30px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                <strong style={{ color: '#1e3a8a', display: 'block', marginBottom: '5px' }}>🗓️ Your Assigned Schedule:</strong>
-                <span style={{ color: '#1e40af', whiteSpace: 'pre-wrap' }}>{mySchedule}</span>
-            </div>
-
-            <div style={{ textAlign: 'center', marginBottom: '30px', padding: '30px', background: status === 'online' ? '#ecfdf5' : '#f8fafc', border: `2px solid ${status === 'online' ? '#10b981' : '#cbd5e1'}`, borderRadius: '12px', transition: 'all 0.3s ease' }}>
-                <h3 style={{ margin: '0 0 10px 0', color: status === 'online' ? '#059669' : '#64748b' }}>
-                    {status === 'online' ? '🔴 LIVE SESSION TIMER' : 'OFFLINE'}
-                </h3>
-                <div style={{ fontSize: '48px', fontWeight: 'bold', color: status === 'online' ? '#10b981' : '#94a3b8', fontFamily: 'monospace' }}>
-                    {formatTime(sessionSeconds)}
+                <div style={{ background: '#eff6ff', borderLeft: '4px solid #3b82f6', padding: '15px', borderRadius: '4px', marginBottom: '30px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                    <strong style={{ color: '#1e3a8a', display: 'block', marginBottom: '5px' }}>🗓️ Your Assigned Schedule:</strong>
+                    <span style={{ color: '#1e40af', whiteSpace: 'pre-wrap' }}>{mySchedule}</span>
                 </div>
-            </div>
 
-            <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-                <div style={{ flex: '1 1 300px', padding: '20px', background: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-                    <h3 style={{ marginTop: 0, color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>📝 Stream Details</h3>
+                <div style={{ textAlign: 'center', marginBottom: '30px', padding: '30px', background: status === 'online' ? '#ecfdf5' : '#f8fafc', border: `2px solid ${status === 'online' ? '#10b981' : '#cbd5e1'}`, borderRadius: '12px', transition: 'all 0.3s ease' }}>
+                    <h3 style={{ margin: '0 0 10px 0', color: status === 'online' ? '#059669' : '#64748b' }}>
+                        {status === 'online' ? '🔴 LIVE SESSION TIMER' : 'OFFLINE'}
+                    </h3>
+                    <div style={{ fontSize: '48px', fontWeight: 'bold', color: status === 'online' ? '#10b981' : '#94a3b8', fontFamily: 'monospace' }}>
+                        {formatTime(sessionSeconds)}
+                    </div>
+                </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '15px' }}>
-                        <div>
-                            <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#475569', marginBottom: '5px' }}>Stream Title *</label>
-                            <input
-                                type="text"
-                                placeholder="e.g., Playing Ranked Valorant!"
-                                value={streamTitle}
-                                onChange={(e) => setStreamTitle(e.target.value)}
-                                disabled={status === 'online'} 
-                                style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
-                            />
+                <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+                    <div style={{ flex: '1 1 300px', padding: '20px', background: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+                        <h3 style={{ marginTop: 0, color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>📝 Stream Details</h3>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '15px' }}>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#475569', marginBottom: '5px' }}>Stream Title *</label>
+                                <input type="text" placeholder="e.g., Playing Ranked Valorant!" value={streamTitle} onChange={(e) => setStreamTitle(e.target.value)} disabled={status === 'online'} style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e1', boxSizing: 'border-box' }} />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#475569', marginBottom: '5px' }}>Description</label>
+                                <textarea placeholder="e.g., Doing a 12-hour subathon today! Come chill with chat." value={streamInfo} onChange={(e) => setStreamInfo(e.target.value)} disabled={status === 'online'} style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e1', boxSizing: 'border-box', minHeight: '80px', fontFamily: 'inherit', resize: 'vertical' }} />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#475569', marginBottom: '5px' }}>Stream Link</label>
+                                <input type="text" placeholder="https://fb.gg/..." value={streamLink} onChange={(e) => setStreamLink(e.target.value)} disabled={status === 'online'} style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e1', boxSizing: 'border-box' }} />
+                            </div>
                         </div>
+                    </div>
 
-                        {/* --- THIS IS THE UPDATED DESCRIPTION BOX --- */}
-                        <div>
-                            <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#475569', marginBottom: '5px' }}>Description</label>
-                            <textarea
-                                placeholder="e.g., Doing a 12-hour subathon today! Come chill with chat."
-                                value={streamInfo}
-                                onChange={(e) => setStreamInfo(e.target.value)}
-                                disabled={status === 'online'}
-                                style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e1', boxSizing: 'border-box', minHeight: '80px', fontFamily: 'inherit', resize: 'vertical' }}
-                            />
-                        </div>
-
-                        <div>
-                            <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#475569', marginBottom: '5px' }}>Stream Link</label>
-                            <input
-                                type="text"
-                                placeholder="https://fb.gg/..."
-                                value={streamLink}
-                                onChange={(e) => setStreamLink(e.target.value)}
-                                disabled={status === 'online'}
-                                style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
-                            />
+                    <div style={{ flex: '1 1 200px', padding: '20px', background: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                        <h3 style={{ marginTop: 0, color: '#334155', width: '100%', textAlign: 'center' }}>Broadcast Actions</h3>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', width: '100%', marginTop: '20px' }}>
+                            <button onClick={() => handleStatusUpdate('online')} disabled={loading || status === 'online'} style={{ padding: '15px', background: status === 'online' ? '#d1fae5' : '#10b981', color: status === 'online' ? '#a7f3d0' : 'white', border: 'none', borderRadius: '6px', cursor: status === 'online' ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '16px' }}>🚀 Go Live</button>
+                            <button onClick={() => handleStatusUpdate('offline')} disabled={loading || status === 'offline'} style={{ padding: '15px', background: status === 'offline' ? '#fee2e2' : '#e53e3e', color: status === 'offline' ? '#fecaca' : 'white', border: 'none', borderRadius: '6px', cursor: status === 'offline' ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '16px' }}>🛑 End Stream</button>
                         </div>
                     </div>
                 </div>
 
-                <div style={{ flex: '1 1 200px', padding: '20px', background: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                    <h3 style={{ marginTop: 0, color: '#334155', width: '100%', textAlign: 'center' }}>Broadcast Actions</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', width: '100%', marginTop: '20px' }}>
-                        <button
-                            onClick={() => handleStatusUpdate('online')}
-                            disabled={loading || status === 'online'}
-                            style={{ padding: '15px', background: status === 'online' ? '#d1fae5' : '#10b981', color: status === 'online' ? '#a7f3d0' : 'white', border: 'none', borderRadius: '6px', cursor: status === 'online' ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '16px' }}
-                        >
-                            🚀 Go Live
-                        </button>
-                        <button
-                            onClick={() => handleStatusUpdate('offline')}
-                            disabled={loading || status === 'offline'}
-                            style={{ padding: '15px', background: status === 'offline' ? '#fee2e2' : '#e53e3e', color: status === 'offline' ? '#fecaca' : 'white', border: 'none', borderRadius: '6px', cursor: status === 'offline' ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '16px' }}
-                        >
-                            🛑 End Stream
-                        </button>
-                    </div>
+                <div style={{ marginTop: '30px' }}>
+                    <h3 style={{ color: '#334155', marginBottom: '15px' }}>📅 Upcoming Events</h3>
+                    <CalendarView token={token} />
                 </div>
-            </div>
-
-            <div style={{ marginTop: '30px' }}>
-                <h3 style={{ color: '#334155', marginBottom: '15px' }}>📅 Upcoming Events</h3>
-                <CalendarView token={token} />
             </div>
         </div>
     );
