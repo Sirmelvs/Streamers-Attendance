@@ -62,7 +62,7 @@ app.put('/api/streamers/:id/schedule', verifyToken, (req, res) => {
     try {
       db.prepare('UPDATE streamers SET weekly_schedule = ? WHERE id = ?').run(weekly_schedule, streamerId);
     } catch (err) {
-      // 3. If they don't have a streamers table, fallback to the users table
+      // 3. If they don't have a streamers table, fallback to athe users table
       db.prepare('UPDATE users SET weekly_schedule = ? WHERE id = ?').run(weekly_schedule, streamerId);
     }
 

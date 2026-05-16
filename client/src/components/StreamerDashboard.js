@@ -6,14 +6,33 @@ function StreamerDashboard({ user, token }) {
     const [status, setStatus] = useState('offline');
     const [loading, setLoading] = useState(false);
     const [streamTitle, setStreamTitle] = useState('');
-    const [streamInfo, setStreamInfo] = useState(''); // This now holds the Description
+    const [streamInfo, setStreamInfo] = useState('');
     const [streamLink, setStreamLink] = useState('');
     const [streamerName, setStreamerName] = useState('');
     const [sessionSeconds, setSessionSeconds] = useState(0);
-    
-    // Schedule State
     const [mySchedule, setMySchedule] = useState('');
+    const [isTimeLocked, setIsTimeLocked] = useState(false);
 
+    useEffect(() => {
+        const checkTimeLock = () => {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+
+            // Locked if: (1 AM AND >= 31 mins) OR (2 AM through 7 AM)
+            if ((hours === 1 && minutes >= 31) || (hours >= 2 && hours <= 7)) {
+                setIsTimeLocked(true);
+            } else {
+                setIsTimeLocked(false);
+            }
+        };
+
+        checkTimeLock(); // Check immediately on load
+        const interval = setInterval(checkTimeLock, 60000); // Re-check every 60 seconds
+        return () => clearInterval(interval);
+    }, []);
+
+    // Fetch initial status
     useEffect(() => {
         const fetchCurrentStatus = async () => {
             if (!user.streamer_id) return;
@@ -51,6 +70,7 @@ function StreamerDashboard({ user, token }) {
         fetchCurrentStatus();
     }, [user.streamer_id, token]);
 
+    // Live Session Timer
     useEffect(() => {
         let interval = null;
         if (status === 'online') {
@@ -75,6 +95,13 @@ function StreamerDashboard({ user, token }) {
             alert("Your account isn't linked to a streamer profile yet.");
             return;
         }
+        
+        // Frontend Check: Double check the lock before letting them go online!
+        if (newStatus === 'online' && isTimeLocked) {
+            alert("System Lock: Broadcasting is disabled between 1:31 AM and 7:59 AM.");
+            return;
+        }
+
         if (newStatus === 'online' && !streamTitle.trim()) {
             alert("Please enter a Stream Title before going live!");
             return;
@@ -82,7 +109,7 @@ function StreamerDashboard({ user, token }) {
 
         setLoading(true);
         try {
-            await fetch('/api/attendance', {
+            const response = await fetch('/api/attendance', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -92,10 +119,18 @@ function StreamerDashboard({ user, token }) {
                     streamer_id: user.streamer_id,
                     status: newStatus,
                     title: streamTitle,
-                    category: streamInfo, // Still sending as 'category' to protect the backend
+                    category: streamInfo, 
                     link: streamLink
                 })
             });
+
+            // --- THIS IS THE NEW PART: Catch the backend lock! ---
+            if (!response.ok) {
+                const errorData = await response.json();
+                alert(errorData.error); // Shows the backend rejection message
+                setLoading(false);
+                return; // Stop the function so they don't actually go online
+            }
 
             setStatus(newStatus);
             if (newStatus === 'online') setSessionSeconds(0);
@@ -168,9 +203,35 @@ function StreamerDashboard({ user, token }) {
 
                     <div style={{ flex: '1 1 200px', padding: '20px', background: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                         <h3 style={{ marginTop: 0, color: '#334155', width: '100%', textAlign: 'center' }}>Broadcast Actions</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', width: '100%', marginTop: '20px' }}>
-                            <button onClick={() => handleStatusUpdate('online')} disabled={loading || status === 'online'} style={{ padding: '15px', background: status === 'online' ? '#d1fae5' : '#10b981', color: status === 'online' ? '#a7f3d0' : 'white', border: 'none', borderRadius: '6px', cursor: status === 'online' ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '16px' }}>🚀 Go Live</button>
-                            <button onClick={() => handleStatusUpdate('offline')} disabled={loading || status === 'offline'} style={{ padding: '15px', background: status === 'offline' ? '#fee2e2' : '#e53e3e', color: status === 'offline' ? '#fecaca' : 'white', border: 'none', borderRadius: '6px', cursor: status === 'offline' ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '16px' }}>🛑 End Stream</button>
+                        
+                        {isTimeLocked && status !== 'online' && (
+                            <p style={{ fontSize: '12px', color: '#e53e3e', textAlign: 'center', fontWeight: 'bold', margin: '10px 0' }}>
+                                ⚠️ System Lock Active: 1:31 AM - 7:59 AM
+                            </p>
+                        )}
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', width: '100%', marginTop: '10px' }}>
+                            
+                            <button
+                                onClick={() => handleStatusUpdate('online')}
+                                disabled={loading || status === 'online' || isTimeLocked}
+                                style={{ 
+                                    padding: '15px', 
+                                    background: status === 'online' ? '#d1fae5' : (isTimeLocked ? '#cbd5e1' : '#10b981'), 
+                                    color: status === 'online' ? '#a7f3d0' : (isTimeLocked ? '#64748b' : 'white'), 
+                                    border: 'none', 
+                                    borderRadius: '6px', 
+                                    cursor: status === 'online' || isTimeLocked ? 'not-allowed' : 'pointer', 
+                                    fontWeight: 'bold', 
+                                    fontSize: '16px' 
+                                }}
+                            >
+                                {isTimeLocked ? '🔒 Locked' : '🚀 Go Live'}
+                            </button>
+
+                            <button onClick={() => handleStatusUpdate('offline')} disabled={loading || status === 'offline'} style={{ padding: '15px', background: status === 'offline' ? '#fee2e2' : '#e53e3e', color: status === 'offline' ? '#fecaca' : 'white', border: 'none', borderRadius: '6px', cursor: status === 'offline' ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '16px' }}>
+                                🛑 End Stream
+                            </button>
                         </div>
                     </div>
                 </div>

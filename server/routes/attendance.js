@@ -51,6 +51,21 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Streamer ID and status are required' });
     }
 
+    // --- THE UNBREAKABLE BACKEND TIME LOCK ---
+    if (status === 'online') {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+
+        // Locked if: (1 AM AND >= 31 mins) OR (2 AM through 7 AM)
+        if ((hours === 1 && minutes >= 31) || (hours >= 2 && hours <= 7)) {
+            return res.status(403).json({ 
+                error: "System Lock Active: Broadcasting is disabled between 1:31 AM and 7:59 AM server time." 
+            });
+        }
+    }
+    // --- END TIME LOCK ---
+
     // 1. Insert the attendance log history
     const insertStmt = db.prepare('INSERT INTO attendance (streamer_id, status) VALUES (?, ?)');
     insertStmt.run(streamer_id, status);
@@ -65,7 +80,6 @@ router.post('/', async (req, res) => {
       `);
       updateStmt.run(status, title || null, category || null, link || null, streamer_id);
     } else {
-      // If they go offline, just update the status (we can leave the old title there for the records)
       const updateStmt = db.prepare('UPDATE streamers SET status = ? WHERE id = ?');
       updateStmt.run(status, streamer_id);
     }
